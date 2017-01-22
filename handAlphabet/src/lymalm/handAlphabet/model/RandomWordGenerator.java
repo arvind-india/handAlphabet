@@ -22,7 +22,7 @@ public class RandomWordGenerator {
 	 * Default constructor.
 	 */
 	public RandomWordGenerator(){
-		this(Language.Swedish, 9, 10);
+		this(Language.Swedish, 0, 100);
 	}
 	
 	/**

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lymalm.handAlphabet.view.SettingsDialogController">
+   <children>
+      <ChoiceBox fx:id="languageChoiceBox" layoutX="138.0" layoutY="25.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="difficultyChoiceBox" layoutX="138.0" layoutY="61.0" prefWidth="150.0" />
+      <Label fx:id="languageLabel" layoutX="27.0" layoutY="30.0" text="Språk" />
+      <Label fx:id="difficultyLabel" layoutX="27.0" layoutY="66.0" text="Svårighetsgrad" />
+      <Button fx:id="okButton" layoutX="183.0" layoutY="111.0" mnemonicParsing="false" onAction="#handleOk" text="OK" />
+      <Button fx:id="cancelButton" layoutX="227.0" layoutY="111.0" mnemonicParsing="false" onAction="#handleCancel" text="Avbryt" />
+   </children>
+</AnchorPane>
