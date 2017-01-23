@@ -5,7 +5,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+
 import lymalm.handAlphabet.MainApp;
+import lymalm.handAlphabet.model.*;
 
 public class SettingsDialogController {
 
@@ -24,6 +26,8 @@ public class SettingsDialogController {
 
     private Stage dialogStage;
 	private boolean okClicked = false;
+	private Language language;
+	private Difficulty difficulty;
 	
     // Reference to the main application.
     private MainApp mainApp;
@@ -34,15 +38,33 @@ public class SettingsDialogController {
      */
     @FXML
     private void initialize() {
+    }
+    
+    /**
+     * Sets up language descriptions for every language in the language
+     * choice box.
+     */
+    private void setUpLanguageChoiceBox(){
     	languageChoiceBox.getItems().removeAll(languageChoiceBox.getItems());
-    	languageChoiceBox.getItems().addAll("Svenskt teckenspråk", "JSL - 日本手話");
-    	languageChoiceBox.getSelectionModel().select(0);
-
-    	difficultyChoiceBox.getItems().removeAll(difficultyChoiceBox.getItems());
-    	difficultyChoiceBox.getItems().addAll("Lätt", "Medel", "Svårt");
-    	difficultyChoiceBox.getSelectionModel().select(0);
+    	languageChoiceBox.getItems().addAll(Language.getDescriptionList());
+    	language = mainApp.getCurrentLanguage();
+    	if(language == null)
+    		language = Language.Swedish;
+    	languageChoiceBox.getSelectionModel().select(Language.getDescription(language));
     }
 
+    /**
+     * Sets up the choice box with different difficulties.
+     */
+    private void setUpDifficultyChoiceBox(){
+    	difficultyChoiceBox.getItems().removeAll(difficultyChoiceBox.getItems());
+    	difficultyChoiceBox.getItems().addAll(Difficulty.getDescriptionList(language));
+    	difficulty = mainApp.getCurrentDifficulty();
+    	if(difficulty == null)
+    		difficulty = Difficulty.Easy;
+    	difficultyChoiceBox.getSelectionModel().select(Difficulty.getDescription(language, difficulty));
+    }
+    
     /**
      * Sets the stage of this dialog.
      * 
@@ -59,6 +81,8 @@ public class SettingsDialogController {
      */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+    	setUpLanguageChoiceBox();
+    	setUpDifficultyChoiceBox();
     }
     
     /**
@@ -75,6 +99,12 @@ public class SettingsDialogController {
      */
     @FXML
     private void handleOk() {
+    	// Transfer selected language and difficulty to main app.
+    	int langIndex = languageChoiceBox.getSelectionModel().getSelectedIndex();
+    	int diffIndex = difficultyChoiceBox.getSelectionModel().getSelectedIndex();
+    	mainApp.setCurrentLanguage(Language.values()[langIndex]);
+    	mainApp.setCurrentDifficulty(Difficulty.values()[diffIndex]);
+    	
     	okClicked = true;
     	dialogStage.close();
     }

@@ -43,6 +43,12 @@ public class RandomWordGenerator {
 	 * within the specified length range in a referenceable list.
 	 */
 	private void setUpDictionary(){
+		// Make sure language is not null.
+		if(language == null){
+			System.out.println("No language selected!");
+			return;
+		}
+		
 		// Locate dictionary file.
 		String dictPath = "resources/dictionaries/";
 		switch(language){

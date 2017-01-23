@@ -1,8 +1,10 @@
 package lymalm.handAlphabet;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import javafx.application.Application;
@@ -18,50 +20,61 @@ public class MainApp extends Application {
 
 	private Stage primaryStage;
 	
-	private String language;
-	private String difficulty;
+	private Language language;
+	private Difficulty difficulty;
+	private String cfgFilePath = "handAlphabet.cfg";
 	
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage){
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Öva upp ditt handalfabet!");
 		this.primaryStage.setResizable(false);
 
 		loadConfigurationFile();
 		if(language == null || difficulty == null){
-			boolean clickedOK = showSettingsDialog();
-			if(!clickedOK)
-				return;
+			boolean clickedOk = showSettingsDialog();
+			if(!clickedOk)
+				return;	// Don't show main program (exits).
+			else
+				saveSettings();
 		}
 		showTestView();
-	}	
+	}
 
 	/**
 	 * Loads configurations from the configuration file and creates it if 
 	 * it doesn't exist. 
 	 */
 	private void loadConfigurationFile(){
-		String cfgFilePath = "handAlphabet.cfg";
     	InputStream input = null;
 		Properties prop = new Properties();
 
-    	try {
+    	try{
     		new File("src/lymalm/handAlphabet/" + cfgFilePath).createNewFile();
     		input = MainApp.class.getResourceAsStream(cfgFilePath);
     		if(input == null)
 	            System.out.println("Reload to update existence of file.");
     		else{
     			prop.load(input);
-    			language = prop.getProperty("language");
-    			difficulty = prop.getProperty("difficulty");
+    			try{
+    				language = Language.valueOf(prop.getProperty("language"));
+    			}catch(IllegalArgumentException | NullPointerException e){
+    				language = null;	
+    			}
+    			try{
+    				difficulty = Difficulty.valueOf(prop.getProperty("difficulty"));
+    			}catch(IllegalArgumentException | NullPointerException e){
+    				difficulty = null;
+    			}
     		}
-    	} catch(IOException ex) {
+    	}catch(IOException ex){
+    		System.out.println("The file could not be opened.");
     		ex.printStackTrace();
-        } finally {
+        }finally{
         	if(input!=null){
-        		try {
+        		try{
         			input.close();
-        		} catch(IOException e) {
+        		}catch(IOException e){
         			e.printStackTrace();
         		}
         	}
@@ -91,7 +104,7 @@ public class MainApp extends Application {
             controller.setDialogStage(settingsStage);
             controller.setMainApp(this);
 
-            settingsStage.showAndWait();;
+            settingsStage.showAndWait();
             return controller.isOkClicked();
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,7 +115,7 @@ public class MainApp extends Application {
     /**
      * Loads the test view.
      */
-    public void showTestView() {
+    public void showTestView(){
         try {
             // Load layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
@@ -132,16 +145,76 @@ public class MainApp extends Application {
     }
     
     /**
+     * Save settings to configuration file.
+     */
+    private void saveSettings(){
+    	OutputStream output = null;
+    	Properties prop = new Properties();
+    	
+    	try{
+    		output = new FileOutputStream("src/lymalm/handAlphabet/" + cfgFilePath);
+
+    		// set the properties value
+    		prop.setProperty("language", language.toString());
+    		prop.setProperty("difficulty", difficulty.toString());
+
+    		// save properties to project root folder
+    		prop.store(output, null);
+
+    	}catch(IOException io){
+    		System.out.println("The file could not be opened.");
+    		io.printStackTrace();
+    	}finally{
+    		if(output != null){
+    			try{
+    				output.close();
+    			}catch(IOException e){
+    				e.printStackTrace();
+    			}
+    		}
+
+    	}
+    }
+    
+    /**
      * @return the main stage.
      */
-    public Stage getPrimaryStage() {
+    public Stage getPrimaryStage(){
         return primaryStage;
+    }
+    
+    /**
+     * @return current language.
+     */
+    public Language getCurrentLanguage(){
+    	return language;
     }
 
     /**
+     * Sets current language.
+     */
+    public void setCurrentLanguage(Language lang){
+    	language = lang;
+    }
+
+    /**
+     * @return current difficulty.
+     */
+    public Difficulty getCurrentDifficulty(){
+    	return difficulty;
+    }
+
+    /**
+     * Sets current difficulty.
+     */
+    public void setCurrentDifficulty(Difficulty diff){
+    	difficulty = diff;
+    }
+    
+    /**
      * Everything starts here!
      */
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		launch(args);
 	}
 }
