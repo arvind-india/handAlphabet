@@ -1,6 +1,7 @@
 package lymalm.handAlphabet;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,7 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage primaryStage){
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Öva upp ditt handalfabet!");
+		this.primaryStage.setTitle("HA");
 		this.primaryStage.setResizable(false);
 
 		loadConfigurationFile();
@@ -50,23 +51,20 @@ public class MainApp extends Application {
 		Properties prop = new Properties();
 
     	try{
-    		new File("src/lymalm/handAlphabet/" + cfgFilePath).createNewFile();
-    		input = MainApp.class.getResourceAsStream(cfgFilePath);
-    		if(input == null)
-	            System.out.println("Reload to update existence of file.");
-    		else{
-    			prop.load(input);
-    			try{
-    				language = Language.valueOf(prop.getProperty("language"));
-    			}catch(IllegalArgumentException | NullPointerException e){
-    				language = null;	
-    			}
-    			try{
-    				difficulty = Difficulty.valueOf(prop.getProperty("difficulty"));
-    			}catch(IllegalArgumentException | NullPointerException e){
-    				difficulty = null;
-    			}
-    		}
+    		(new File(cfgFilePath)).createNewFile();
+    		input = new FileInputStream(cfgFilePath);
+    		
+			prop.load(input);
+			try{
+				language = Language.valueOf(prop.getProperty("language"));
+			}catch(IllegalArgumentException | NullPointerException e){
+				language = null;	
+			}
+			try{
+				difficulty = Difficulty.valueOf(prop.getProperty("difficulty"));
+			}catch(IllegalArgumentException | NullPointerException e){
+				difficulty = null;
+			}
     	}catch(IOException ex){
     		System.out.println("The file could not be opened.");
     		ex.printStackTrace();
@@ -147,12 +145,12 @@ public class MainApp extends Application {
     /**
      * Save settings to configuration file.
      */
-    private void saveSettings(){
+    public void saveSettings(){
     	OutputStream output = null;
     	Properties prop = new Properties();
     	
     	try{
-    		output = new FileOutputStream("src/lymalm/handAlphabet/" + cfgFilePath);
+    		output = new FileOutputStream(cfgFilePath);
 
     		// set the properties value
     		prop.setProperty("language", language.toString());
